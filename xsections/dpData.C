@@ -1,5 +1,5 @@
 // Author: Jan Musinsky
-// 17/07/2014
+// 28/08/2014
 
 #include <TSystem.h>
 #include <TMath.h>
@@ -62,9 +62,9 @@ TGraphErrors *ParsePDGData(const char *fname, const char *refer = "", Bool_t sys
 
 void dpData()
 {
-  TString fname = "rpp2013-pdeut_total.dat";
-  //  fname = "rpp2013-np_total.dat";
-  TString furl = "http://pdg.lbl.gov/2013/hadronic-xsections/" + fname;
+  TString fname = "rpp2014-pdeut_total.dat";
+  //  fname = "rpp2014-np_total.dat";
+  TString furl = "http://pdg.lbl.gov/2014/hadronic-xsections/" + fname;
   if (gSystem->AccessPathName(fname))
     gSystem->Exec(TString::Format("wget %s", furl.Data()));
 
