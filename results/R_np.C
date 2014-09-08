@@ -48,7 +48,7 @@ void R_np()
   gr->SetTitle(0);
   gr->SetMinimum(0.0);
   gr->SetMaximum(1.0);
-  gr->GetXaxis()->SetTitle("T_{n }, GeV");
+  gr->GetXaxis()->SetTitle("T_{n } (GeV)");
   gr->GetXaxis()->SetNdivisions(409);
   gr->GetYaxis()->SetTitle("R_{ np #rightarrow pn}");
   gr->GetYaxis()->CenterTitle();
