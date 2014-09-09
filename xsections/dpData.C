@@ -1,7 +1,8 @@
 // Author: Jan Musinsky
-// 28/08/2014
+// 09/09/2014
 
 #include <TSystem.h>
+#include <TFile.h>
 #include <TMath.h>
 #include <TGraphErrors.h>
 #include <TAxis.h>
@@ -66,7 +67,7 @@ void dpData()
   //  fname = "rpp2014-np_total.dat";
   TString furl = "http://pdg.lbl.gov/2014/hadronic-xsections/" + fname;
   if (gSystem->AccessPathName(fname))
-    gSystem->Exec(TString::Format("wget %s", furl.Data()));
+    if (!TFile::Cp(furl, fname)) return;
 
   TGraphErrors *gr = ParsePDGData(fname, "", kFALSE);
   if (!gr) return;
