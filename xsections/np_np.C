@@ -1,27 +1,54 @@
 // Author: Jan Musinsky
-// 20/10/2009
+// 21/09/2014
 
-TList *CheckFiles(const char *dir_name)
+#include <TROOT.h>
+#include <TSystem.h>
+#include <TMultiGraph.h>
+#include <TGraphErrors.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include <TAxis.h>
+#include <TLegend.h>
+#include <TMath.h>
+#include <TVirtualFitter.h>
+#include <fstream>
+
+void CheckDirFiles(const char *dir, TList *files)
 {
-  // all data from http://nn-online.org
-  // G. Bizard et al., Nucl. Phys. B85 (1975), 14-30 (SATURNE)
-  // B.E. Bonner et al., Phys. Rev. Lett. 41 (1978), 1200-1203 (Los Alamos)
-  // P.F. Shepard et al., Phys. Rev. D 10 (1974), 2735-2762 (Princeton)
-  //
-  // T_kin = 801.9 MeV (141 DSG  data between 59.78 and 179.62 degrees)
-  // Mahavir Jain et al., Phys. Rev. C 30 (1984), 566-573 (LAMPF)
+  void *pdir = gSystem->OpenDirectory(dir);
+  if (!pdir || !files) return;
 
   const char *file;
-  void *dir = gSystem->OpenDirectory(dir_name);
-  TList *list = new TList();
-  while ((file = gSystem->GetDirEntry(dir))) {
-    TString file_name = Form("%s/%s", dir_name, file);
-    if (!file_name.EndsWith(".np")) continue;
-    list->Add(new TObjString(file_name));
+  while ((file = gSystem->GetDirEntry(pdir))) {
+    TString dirFile = TString::Format("%s/%s", dir, file);
+    if (!dirFile.EndsWith(".np")) continue;   // only data file
+    if (files->FindObject(dirFile)) continue; // no duplicate
+    files->Add(new TObjString(dirFile));
   }
-  // sort the files in alphanumeric order (small -> high energy)
-  list->Sort();
-  return list;
+  files->Sort();
+}
+
+void ParseNNOnlineData(const char *fname)
+{
+  FILE *file = fopen(fname, "r");
+  if (!file) return;
+  char *line = 0; // must be NULL, otherwise backtrace after call: free(line);
+  size_t len;
+  const char *format = "%lg %*s %lg %*s %*s %*s %lg %*s %lg";
+
+  while (getline(&line, &len, file) != -1) {
+    Double_t tLab, cmAngle, dsg, dsgErr;
+    Int_t nwords = sscanf(line, format, &tLab, &cmAngle, &dsg, &dsgErr);
+
+    //    printf("%s", line);
+    //    Printf("%f\t%f\t%f\t%f\t=> %d", tLab, cmAngle, dsg, dsgErr, nwords);
+
+    if (nwords != 4) continue; // only real data
+    // TODO
+  }
+
+  free(line);
+  fclose(file);
 }
 
 TGraphErrors *CreateGraph(const char *file)
@@ -127,7 +154,9 @@ void np_np()
   TGraphErrors *shepard0 = new TGraphErrors();
   shepard0->SetName("shepard0"); shepard0->SetMarkerStyle(26);
 
-  TList *files = CheckFiles("NN-OnLine");
+  TList *files = new TList();
+  CheckDirFiles("NN-OnLine", files);
+  CheckDirFiles("NN-OnLine/others", files);
   TIter next(files);
   TObjString *obj;
   TGraphErrors *ge;
@@ -153,14 +182,12 @@ void np_np()
       shepards->Add(ge);
     }
   }
-  files->Delete();
+  files->Delete(); // delete TObjString
   delete files;
 
-  gROOT->SetStyle("Plain");
-  gROOT->LoadMacro("$ROOTSYS/macros/printTeX.C");
   gStyle->SetOptStat(0);
   new TCanvas();
-  leg = new TLegend(0.60,0.75,0.85,0.85);
+  TLegend *leg = new TLegend(0.60,0.75,0.85,0.85);
   // leg->SetHeader("Bizard (Saturne)");
   // ((TLegendEntry *)leg->GetListOfPrimitives()->Last())->SetTextAlign(22);
   ge = (TGraphErrors *)bizards->GetListOfGraphs()->At(9);
@@ -180,7 +207,7 @@ void np_np()
   leg->AddEntry(ge,Form("p = %4.2f GeV/c", ge->GetUniqueID()/100000.0),"P");
   leg->SetFillColor(0);
   leg->Draw();
-  printTeX("np_two_bizard");
+  //  printTeX("np_two_bizard");
 
   new TCanvas();
   bizard0->GetXaxis()->SetRangeUser(1.0, 2.0);
@@ -210,7 +237,7 @@ void np_np()
   error += 2.0*cov*(impuls/p0);
   error = fe->Eval(impuls)*TMath::Sqrt(error);
   Printf("p = %5.3f, sigma(0) = %g +- = %g", impuls, fe->Eval(impuls), error);
-  printTeX("np_sigma0");
+  //  printTeX("np_sigma0");
 
   TObjArray *t0_graphs = new TObjArray();
   t0_graphs->AddVector(bizard0, bonner0, shepard0, 0);
