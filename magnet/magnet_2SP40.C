@@ -1,5 +1,5 @@
 // Author: Jan Musinsky
-// 08/09/2014
+// 15/05/2019
 
 #include <TGraph.h>
 #include <TAxis.h>
@@ -11,6 +11,9 @@
 
 void magnet_2SP40()
 {
+  // 2005-01 measurement with DH10 Hall sensor
+  // other Hall sensor than 2004-10 measurement
+
   const Int_t np = 20;
   Double_t B[np] = { 0.065, 0.09, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
                      0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0 };
