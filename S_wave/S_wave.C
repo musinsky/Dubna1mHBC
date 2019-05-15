@@ -26,6 +26,7 @@ void S_wave()
   g1->GetXaxis()->SetRangeUser(0.0, 0.5);
   g1->GetXaxis()->SetTitle("p (GeV/c)");
   g1->GetYaxis()->SetTitle("u^{2} / (u^{2} + w^{2})");
+  // yaxis in old articles = nucleon polarization
   g1->GetYaxis()->SetTitleOffset(1.25);
   g1->GetYaxis()->CenterTitle();
   g2->SetLineStyle(2);
