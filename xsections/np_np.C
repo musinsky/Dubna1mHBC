@@ -45,6 +45,7 @@ void ParseNNOnlineData(const char *fname)
 
     if (nwords != 4) continue; // only real data
     // TODO
+    // TODO 2019-05 pouzit TPRegexp
   }
 
   free(line);
