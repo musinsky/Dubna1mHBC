@@ -63,9 +63,9 @@ TGraphErrors *ParsePDGData(const char *fname, const char *refer = "", Bool_t sys
 
 void dpData()
 {
-  TString fname = "rpp2014-pdeut_total.dat";
-  //  fname = "rpp2014-np_total.dat";
-  TString furl = "http://pdg.lbl.gov/2014/hadronic-xsections/" + fname;
+  TString fname = "rpp2020-pdeut_total.dat";
+  //  fname = "rpp2020-np_total.dat";
+  TString furl = "https://pdg.lbl.gov/2021/hadronic-xsections/" + fname;
   if (gSystem->AccessPathName(fname))
     if (!TFile::Cp(furl, fname)) return;
 
